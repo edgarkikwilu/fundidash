@@ -1,28 +1,40 @@
 <template>
   <div id="app">
-    <img alt="Vue logo" src="./assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
+    <!-- <router-view name="login" v-if="!isAuth"/> -->
+    <keep-alive>
+      <router-view/>
+    </keep-alive>
   </div>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
+// import {mdbNavBar,mdbNavItem,mdbNavBarBav,mdbSideNav2,mdbAvatar,mdbBtn,mdbIcon} from 'mdbvue'
 
 export default {
   name: 'App',
-  components: {
-    HelloWorld
-  }
+  data:function(){
+    return {
+      isAuth:false
+    }
+  },
+  mounted(){
+    // this.isAuth = this.$isAuth
+    //     if (this.isAuth) {
+    //       this.$router.push({name:'home'})
+    //     }
+    }
+  // components:{mdbNavBar,mdbNavItem,mdbNavBarBav,mdbSideNav2,mdbAvatar,mdbBtn,mdbIcon}
 }
 </script>
 
-<style>
+<style lang="scss">
+$image-path: '../mdb/mdbvue/img';
+@import '../mdb/mdbvue/scss/mdb-free.scss';
+
+@import url('https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap');
+
 #app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
   text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
+  // margin-top: 150px;
 }
 </style>

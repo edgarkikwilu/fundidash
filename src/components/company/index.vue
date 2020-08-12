@@ -1,0 +1,158 @@
+<template>
+    <b-container>
+        <b-row>
+            <b-col cols="12" class="mt-5" style="float:left;text-align:left;"><strong>BENET , SEE  WHAT HAPPENED TO SERVICES</strong></b-col>
+            <b-col cols="12">
+                <div class="d-flex flex-row flex-nowrap breadcrumb_style">
+                    <span>Dashboard</span>
+                    <span class="ml-2">></span>
+                    <span class="ml-2">Companies</span>
+                </div>
+            </b-col>
+        </b-row>
+        <b-row>
+            <b-col cols="4">
+                <b-card style="width:213px;" class="top-cards-first mt-5 remove-box-shadow">
+                    <b-media no-body>
+                        <b-media-aside>
+                            <span style="border-radius:50%;background-color:#B7BE46;height:46px;width:46px;">
+                                <img src="../../assets/users.png" style="width:28px;height:28px;margin-top:7px;">
+                            </span>
+                        </b-media-aside>
+                        <b-media-body style="margin-left:-30px">
+                            <p class="metric_value ml-5" style="float:left;">63</p>
+                            <p class="metric_label ml-5" style="float:left;">Number of companies</p>
+                        </b-media-body>
+                    </b-media>
+                    <b-card-footer class="transparent footer" style="border:none; margin-bottom:0px;padding-bottom:0px;">
+                        <div class="d-flex flex-row flex-nowrap" style="margin-left:-25px;">
+                            <b-icon icon="caret-up-fill" class="caret px-2"></b-icon>
+                            <span class="active_number px-2">533</span>
+                            <span class="active_text px-2">Active this week</span>
+                        </div>
+                    </b-card-footer>
+                </b-card>
+            </b-col>
+        </b-row>
+        <b-row>
+            <b-col cols="12" class="mt-5">
+                <b-card class="remove-box-shadow">
+                    <table class="table table-borderless table-inverse table-responsive">
+                        <thead class="thead-inverse border-bottom">
+                            <tr class="mb-3">
+                                <th></th>
+                                <th class="th">Company Name</th>
+                                <th class="th">Company Location</th>
+                                <th class="th">Service Category</th>
+                                <th class="th">Service Sub-Categories</th>
+                                <th>
+                                    <!-- <select name="sort" id="" class="form-control filter" style="font-size:10px;">
+                                        <option value="">service ID</option>
+                                        <option value="">number of fundis</option>
+                                        <option value="">number of categories</option>
+                                    </select> -->
+                                </th>
+                                <th>
+                                    <button type="button" class="btn btn-danger btn_new" @click="navigate('create_company')" style="font-size:10px; height:30px;">+ NEW COMPANY</button>
+                                </th>
+                                <th></th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="border-bottom" v-for="company in companies" :key="company.id">
+                                    <td>
+                                        <img src="../../assets/fundis.png" style="width:28px;height:28px;margin-top:0px;">
+                                    </td>
+                                    <td>{{company.name}}</td>
+                                    <td>{{company.location}}</td>
+                                    <td>{{company.service_category}}</td>
+                                    <td>{{company.subcategories}}</td>
+                                    <td></td>
+                                    <td></td>
+                                    <td>
+                                        <div class="flex-row flex-nowrap">
+                                            <div>
+                                                <b-icon icon="three-dots-vertical"></b-icon>
+                                                <b-icon @click="onEdit(company)" icon="pencil" class="cursor-style ml-3"></b-icon>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                    </table>
+                </b-card>
+            </b-col>
+        </b-row>
+    </b-container>
+</template>
+
+<script>
+export default {
+    name:'companies',
+    data:function(){
+        return {
+            companies:[
+                {id:1,img:'report.png',name:'Electronics Repair',location:'location xyz',service_category:"electronic repair",subcategories:"sub1,sub2,sub3",tinno:'tin22x',registrationno:'reg123',businessno:'business one',region:'dar es salaam',address:'kimara mwisho',phone:'255656724750',email:'ekikwilu@gmail.com',website:'patanyumba.com'},
+                {id:1,img:'report.png',name:'House Cleaning',location:'location xyz',service_category:"electronic repair",subcategories:"sub1,sub2,sub3",tinno:'tin22x',registrationno:'reg123',businessno:'business one',region:'dar es salaam',address:'kimara mwisho',phone:'255656724750',email:'ekikwilu@gmail.com',website:'patanyumba.com'},
+                {id:1,img:'report.png',name:'Home Internet',location:'location xyz',service_category:"electronic repair",subcategories:"sub1,sub2,sub3",tinno:'tin22x',registrationno:'reg123',businessno:'business one',region:'dar es salaam',address:'kimara mwisho',phone:'255656724750',email:'ekikwilu@gmail.com',website:'patanyumba.com'},
+                {id:1,img:'report.png',name:'Car Repair',location:'location xyz',service_category:"electronic repair",subcategories:"sub1,sub2,sub3",tinno:'tin22x',registrationno:'reg123',businessno:'business one',region:'dar es salaam',address:'kimara mwisho',phone:'255656724750',email:'ekikwilu@gmail.com',website:'patanyumba.com'}
+            ]
+        }
+    },
+    mounted(){
+        this.axios.get("http://localhost:8000/services").then(
+            response=>{
+                console.log(response)
+            }
+        ).catch(error=>{
+            console.log(error)
+        })
+    },
+    methods:{
+        navigate(page){
+            this.$router.push({name:page})
+        },
+        onEdit(company){
+            console.log(company)
+            this.$router.push({name:"edit_company",params:{company:company}})
+        }
+    }
+}
+</script>
+
+<style lang="scss">
+    .th{
+        font-style: normal;
+        font-weight: bold;
+        font-size: 14px;
+        line-height: 20px;
+        /* identical to box height, or 143% */
+        letter-spacing: -0.05px;
+        color: #3A3B3F;
+    }
+    .breadcrumb_style{
+        color: #535353;
+    }
+    .cursor-style{
+        cursor: pointer;
+    }
+    .cursor-style:hover{
+        cursor: pointer;
+        color: #B7BE46;
+    }
+    .filter{
+        height: 36px;
+        padding-top: 80px;
+    }
+    .btn_new{
+        height: 36px;
+        padding-top: 4px !important;
+        margin-top: 20px !important;
+    }
+    .border-bottom{
+        border-bottom:1px solid #ECECEC;
+    }
+    .remove-box-shadow{
+        box-shadow:none !important;
+    }
+</style>
