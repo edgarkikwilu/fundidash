@@ -5,7 +5,7 @@
             <b-col cols="6" class="d-flex flex-column flex-nowrap clearfix">
                 <div class="title text-gray float-left">EDIT SERVICE BASIC DETAILS</div>
                 <div class="input">
-                    <b-form-input class="input-control cat-name-input" v-model="catname" placeholder="Service name"></b-form-input>
+                    <b-form-input class="input-control cat-name-input" v-model="form.name" placeholder="Service name"></b-form-input>
                 </div>
                 <b-form-file ref="catimage-ref"  @change="previewImage" accept=".jpeg, .png" :state="Boolean(catimage)" placeholder="Choose service icon or drop it here..." 
                     drop-placeholder="Drop service icon here..." class="mt-3 text-gray file-upload-control"></b-form-file>
@@ -25,21 +25,21 @@
         <b-row class="clearfix mt-4">
             <b-col cols="6">
                 <div class="row" style="text-align:left;">
-                    <div class="col-md-5 ml-2 category-name subcat-name">{{catname}}</div>
+                    <div class="col-md-5 ml-2 category-name subcat-name">{{form.name}}</div>
                     <div class="cat-img col-md-2">
-                        <div v-if="imageData.length > 0">
-                            <img class="preview" :src="imageData">
-                        </div>
+                        <!-- <div v-if="form.img > 0"> -->
+                            <img class="preview" :src="form.img">
+                        <!-- </div> -->
                     </div>
                 </div>
             </b-col>
             <b-col cols=6>
                 <ol class="added-subcat-list">
-                    <li v-for="(subcat, index) in subcategories" :key="subcat.subcategory">
+                    <li v-for="(subcat, index) in form.subcategories" :key="subcat.subcategory">
                         <div class="row added-subcat" style="text-align:left;">
-                            <div class="col-md-6 subcat-name">{{subcat.subcategory}}</div>
+                            <div class="col-md-6 subcat-name">{{subcat.name}}</div>
                             <div class="subcat-img col-md-3 ml-4">
-                                <img :src="subcat.subcatimage" class="subimage" alt="">
+                                <img :src="subcat.img" class="subimage" alt="">
                             </div>
                             <div class="ml-4 col-md-1 delete-icon">
                                 <b-icon variant="danger" @click="remove(index)" icon="trash-fill" font-scale="1.5"></b-icon>
@@ -50,7 +50,7 @@
                 </ol>
             </b-col>
             <b-col cols="3" offset-md="9" class="mt-5">
-                <b-button variant="danger" style="width:211px;height:35px;font-style: normal;font-weight: bold;line-height: 16px;font-size:10px;">Update</b-button>
+                <b-button @click="submit" variant="danger" style="width:211px;height:35px;font-style: normal;font-weight: bold;line-height: 16px;font-size:10px;">Update</b-button>
             </b-col>
         </b-row>
         </b-card>
@@ -62,6 +62,7 @@ export default {
     name:'create-service',
     data:function(){
         return {
+            form:{},
             catname:"TEST",
             imageData: "https://picsum.photos/30",
             subcatimagedata:"",
@@ -69,36 +70,39 @@ export default {
             subcatimage:undefined,
             subcategory:'',
             url:"https://picsum.photos/30/30",
-            subcategories:[
-                {subcategory:"Mobile Repair",subcatimage:'https://picsum.photos/30/30'},
-                {subcategory:"Mobile Software Support",subcatimage:'https://picsum.photos/30/30'},
-                {subcategory:"Mobile Network Installing",subcatimage:'https://picsum.photos/30/30'}
-            ],
+            subcategories:[],
         }
     },
-    watch:{
-        
+    props:['service'],
+    mounted(){
+        this.form = this.service.params.service
+        console.log(this.form)
+        console.log(this.form.img)
     },
     methods:{
         remove(index){
             console.log(index)
              var headers = {
                 headers:{
-                    'Authorization':'Bearer',
-                    'Accept':'application/json'
+                    'Authorization':'Bearer '+localStorage.access_token,
+                    'Accept':'application/json',
+                    'Content-Type':'application/json'
                 }
             }
-            var body = {
-                catname:this.subcategories[index].subcategory
-            }
-            this.axios.post("http://localhost:8000/services/remove/sub",body,headers)
+            // var body = {
+            //     id:this.subcategories[index].id
+            // }
+            console.log(this.form.subcategories[index])
+            this.axios.get("services/subcategory/remove/"+this.form.subcategories[index].id,headers)
             .then(
                 response=>{
                     console.log(response)
-                    this.subcategories.splice(index,1)
+                    this.form.subcategories.splice(index,1)
+                    alert("success")
                 }
             ).catch(error=>{
                 console.log(error)
+                alert("error deleting subcategory")
             })
         },
         onSelectCatImage(){
@@ -107,30 +111,33 @@ export default {
         },
         addNewSubCategory(){
             var obj = {
-                subcategory:this.subcategory,
-                subcatimage:this.subcatimagedata
+                name:this.subcategory,
+                img:this.subcatimagedata
             }
-            this.subcategories.push(obj);
+            this.form.subcategories.push(obj);
         },
         submit(){
             var headers = {
                 headers:{
-                    'Authorization':'Bearer',
-                    'Accept':'application/json'
+                    'Authorization':'Bearer '+localStorage.access_token,
+                    'Accept':'application/json',
+                    'Content-Type':'application/json'
                 }
             }
             var body = {
-                catname:this.catname,
-                catimaget:this.catimage,
-                subcategories:this.subcategories
+                id:this.form.id,
+                title:this.catname,
+                image:this.catimage,
+                subcategories:this.form.subcategories
             }
-                this.axios.post("http://localhost:8000/services/save",body,headers)
-                .then(
-                    response=>{
-                        console.log(response)
-                    }
-                ).catch(error=>{
-                    console.log(error)
+            console.log(body)
+            this.axios.post("services/update",body,headers)
+            .then(
+                response=>{
+                    console.log(response)
+                }
+            ).catch(error=>{
+                console.log(error)
                 })
         },
          previewImage: function(event) {

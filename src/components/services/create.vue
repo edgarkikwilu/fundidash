@@ -18,11 +18,11 @@
                 <b-form-file @change="previewSubCatImage" accept=".jpeg, .png" :state="Boolean(subcatimage)" placeholder="Choose subcategory icon or drop it here..." 
                     drop-placeholder="Drop subcategory icon here..." class="mt-3 text-gray file-upload-control"></b-form-file>
                 
-                <div class="new-subservice" @click="addNewSubCategory">+add new subcategory</div>
+                <div class="new-subservice mt-2" @click="addNewSubCategory">+add new subcategory</div>
 
             </b-col>
         </b-row>
-        <b-row class="clearfix mt-4">
+        <b-row class="clearfix mt-5 ">
             <b-col cols="6">
                 <div class="d-flex flex-row flex-nowrap">
                     <div class="category-name subcat-name">{{catname}}</div>
@@ -50,7 +50,7 @@
                 </ol>
             </b-col>
             <b-col cols="3" offset-md="9" class="mt-5">
-                <b-button variant="danger" style="width:211px;height:35px;font-style: normal;font-weight: bold;line-height: 16px;font-size:10px;">Submit</b-button>
+                <b-button @click="submit" variant="danger" style="width:211px;height:35px;font-style: normal;font-weight: bold;line-height: 16px;font-size:10px;">Submit</b-button>
             </b-col>
         </b-row>
         </b-card>
@@ -70,9 +70,9 @@ export default {
             subcategory:'',
             url:"https://picsum.photos/30/30",
             subcategories:[
-                {subcategory:"Mobile Repair",subcatimage:'https://picsum.photos/30/30'},
-                {subcategory:"Mobile Software Support",subcatimage:'https://picsum.photos/30/30'},
-                {subcategory:"Mobile Network Installing",subcatimage:'https://picsum.photos/30/30'}
+                // {subcategory:"Mobile Repair",subcatimage:'https://picsum.photos/30/30'},
+                // {subcategory:"Mobile Software Support",subcatimage:'https://picsum.photos/30/30'},
+                // {subcategory:"Mobile Network Installing",subcatimage:'https://picsum.photos/30/30'}
             ],
         }
     },
@@ -85,36 +85,39 @@ export default {
             this.subcategories.splice(index,1)
         },
         onSelectCatImage(){
-            this.catimage = URL.createObjectURL(this.$refs["catimage-ref"]);
+            // this.catimage = URL.createObjectURL(this.$refs["catimage-ref"]);
             console.log(this.catimage)
         },
         addNewSubCategory(){
             var obj = {
                 subcategory:this.subcategory,
-                subcatimage:this.subcatimagedata
+                subcatimage:this.subcatimage
             }
             this.subcategories.push(obj);
         },
         submit(){
-            var headers = {
+            var header = {
                 headers:{
-                    'Authorization':'Bearer',
-                    'Accept':'application/json'
+                    'Authorization':'Bearer ' + localStorage.access_token,
+                    'Accept':'application/json',
+                    'Content-Type':'application/json',
+                    'X-Requested-With': 'XMLHttpRequest',
                 }
             }
             var body = {
-                catname:this.catname,
-                catimaget:this.catimage,
+                title:this.catname,
+                image:this.catimage,
                 subcategories:this.subcategories
             }
-                this.axios.post("http://localhost:8000/services/save",body,headers)
-                .then(
-                    response=>{
-                        console.log(response)
-                    }
-                ).catch(error=>{
-                    console.log(error)
-                })
+            this.axios.post("services/create",body,header)
+            .then(
+                response=>{
+                    console.log(response)
+                this.$router.push({name:'services'})
+                }
+            ).catch(error=>{
+                console.log(error)
+            })
         },
          previewImage: function(event) {
             // Reference to the DOM input element
@@ -128,9 +131,12 @@ export default {
                     // Note: arrow function used here, so that "this.imageData" refers to the imageData of Vue component
                     // Read image as base64 and set to imageData
                     this.imageData = e.target.result;
+                    this.catimage = e.target.result
+                    
                 }
                 // Start the reader job - read file as a data url (base64 format)
-                this.catimage = reader.readAsDataURL(input.files[0]);
+                this.imageData = reader.readAsDataURL(input.files[0]);
+                // console.log(this.catimage)
             }
         },
         previewSubCatImage: function(event) {
@@ -145,6 +151,7 @@ export default {
                     // Note: arrow function used here, so that "this.imageData" refers to the imageData of Vue component
                     // Read image as base64 and set to imageData
                     this.subcatimagedata = e.target.result;
+                    this.subcatimage = e.target.result
                 }
                 // Start the reader job - read file as a data url (base64 format)
                 this.subcatimagedata = reader.readAsDataURL(input.files[0]);

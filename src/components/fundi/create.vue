@@ -13,7 +13,7 @@
                     </b-row>
                     <b-row class="mt-5">
                         <b-col cols="9" offset-md="1">
-                            <b-input v-model="form.nida" class="input-border" placeholder="NIDA ID Nunmber"></b-input>
+                            <b-input v-model="form.nida" maxLength="16" type="number" class="input-border" placeholder="NIDA ID Number"></b-input>
                         </b-col>
                     </b-row>
                     <b-row>
@@ -50,7 +50,7 @@
                             </b-form-select>
                         </b-col>
                         <b-col cols="3" class="mt-3">
-                            <b-input v-model="form.cost" placeholder="Initial Costing" class="input-border"></b-input>
+                            <b-input v-model="form.cost" type="number" placeholder="Initial Costing" class="input-border"></b-input>
                         </b-col>
                     </b-row>
                     <b-row class="mt-5">
@@ -85,7 +85,7 @@
                         </b-col>
                         <b-col cols="3" class="phone-field">
                             <span id="code">+255</span>
-                            <b-input v-model="form.phone" class="input-border phone-input" placeholder="Contact Number"></b-input>
+                            <b-input type="number" v-model="form.phone" class="input-border phone-input" placeholder="Contact Number"></b-input>
                         </b-col>
                     </b-row>
                     <b-row>
@@ -123,19 +123,25 @@ export default {
             isActive:true,
             category:'',
             subcategory:'',
-            categories:[{value:null,text:'select category'},{value:'1',text:'Electronics'},{value:'2',text:'Plumbing'},{value:'3',text:'Wood work'},{value:'4',text:'Furniture'}],
-            subcategories:[{value:null,text:'select sub category'},{value:'1',text:'Electronics'},{value:'2',text:'Plumbing'},{value:'3',text:'Wood work'},{value:'4',text:'Furniture'}],
+            categories:[],
+            subcategories:[],
             form:{nida:'',gender:'',fname:'',lname:'',category:'',subcategory:'',costing:0,region:'',address:'',phone:'',email:'',website:'',head:''},
             regions:[{value:null,text:'Regions'},{value:1,text:'Dar es salaam'},{value:1,text:'Arusha'},{value:1,text:'Mwanza'},{value:1,text:'Morogoro'},{value:1,text:'Dodoma'}]
         }
     },
     mounted(){
-
+        this.loadCategories()
     },
     watch:{
         category:function(){
-            this.form.category = this.category
-            this.loadSubcategories()
+               this.form.category = this.category
+                // this.loadSubcategories()
+                for(let i = 0; i < this.categories.length; i++) {
+                    var element = this.categories[i];
+                    if(element.value == this.category){
+                        this.subcategories = element.subcategories
+                    }
+                }
         }
     },
     methods:{
@@ -151,35 +157,82 @@ export default {
         prev(){
             this.isActive = true
         },
-        loadSubcategories(){
+        loadCategories(){
             var headers = {
                 headers:{
                     'Accept':'application/json',
-                    'Authorization':'Bearer '
+                    'Authorization':'Bearer '+localStorage.access_token,
+                    'Content-Type':'application/json'
                 }
             }
-            this.axios.get('/subcategories/'+this.category,headers).then(
+            this.axios.get('services/onlyCat',headers).then(
                 response=>{
-                    console.log(response)
-                    this.subcategory = []
+                    for(var i=0;i<response.data.length;i++){
+                        var service = response.data[i]
+                        var subcategories_ = []
+                        for(var j=0;j<service.subcategories.length;j++){
+                            var sub = service.subcategories[j]
+                            // console.log(sub)
+                            var obj_ = {
+                                value:sub.id,
+                                text:sub.title,
+                            }
+                            // console.log(obj_)
+                            subcategories_.push(obj_)
+                        }   
+                        var obj = {
+                            value: service.id,
+                            text: service.name,
+                            subcategories:subcategories_
+                        }
+                        this.categories.push(obj)
+                        console.log(service)
+                    }
                 }
             ).catch(error=>{
                 console.log(error)
             })
         },
+        loadSubcategories(){
+            for (let i = 0; i < this.categories; i++) {
+                const element = this.categories[i];
+                console.log(this.category)
+                if(element.id == this.category){
+                    this.subcategories = element.subcategories
+                    console.log(element)
+                }
+                
+            }
+            // var headers = {
+            //     headers:{
+            //         'Accept':'application/json',
+            //         'Authorization':'Bearer '+localStorage.access_token,
+            //         'Content-Type':'application/json'
+            //     }
+            // }
+            // this.axios.get('/subcategories/'+this.category,headers).then(
+            //     response=>{
+            //         console.log(response)
+            //         this.subcategory = []
+            //     }
+            // ).catch(error=>{
+            //     console.log(error)
+            // })
+        },
         submit(){
             this.isloading = true
             var header = {
                 headers:{
-                    'Authorization':'',
-                    'Accept':'application/json'
+                    'Authorization':'Bearer '+localStorage.access_token,
+                    'Accept':'application/json',
+                    'Content-Type':'application/json'
                 }
             }
-            this.axios.post('/company/save',this.form,header).then(
+            this.axios.post('/fundi/create',this.form,header).then(
                 response=>{
                     this.isloading = false
                     console.log(response)
-                    this.$router.push({name:'companies'})
+                    this.$router.push({name:'fundis'})
                 }
             ).catch(error=>{
                 this.isloading = false
@@ -273,5 +326,16 @@ export default {
             height: 15px !important;
             margin-top: 5px !important;
         }   
+    }
+    /* Chrome, Safari, Edge, Opera */
+    input::-webkit-outer-spin-button,
+    input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+    }
+
+    /* Firefox */
+    input[type=number] {
+    -moz-appearance: textfield;
     }
 </style>

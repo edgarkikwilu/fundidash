@@ -33,6 +33,18 @@ $image-path: '../mdb/mdbvue/img';
 
 @import url('https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap');
 
+@font-face {
+  font-family: "voda-bold";
+  src: local("voda-bold"),
+      url(./font/VodafoneRg-Bold.ttf) format("truetype");
+}
+
+@font-face {
+  font-family: "voda-rg";
+  src: local("voda-rg"),
+      url(./font/VodafoneRg-Regular.ttf) format("truetype");
+}
+
 #app {
   text-align: center;
   // margin-top: 150px;

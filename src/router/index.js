@@ -15,8 +15,13 @@ import Fundis from '@/components/fundi/index'
 import FundiCreate from '@/components/fundi/create'
 import FundiEdit from '@/components/fundi/edit'
 
+import Users from '@/components/users/index'
+import UserProjects from '@/components/users/projects'
+
 import Login from '@/components/auth/Login'
 import ResetPassword from '@/components/auth/resetPassword'
+
+// import store from '../store'
 
 Vue.use(Router);
 
@@ -27,6 +32,16 @@ Vue.use(Router);
       name:'home',
       component:Home,
       children:[
+        {
+          path:'/users',
+          name:'users',
+          component:Users
+        },
+        {
+          path:'/user/projects',
+          name:'projects',
+          component:UserProjects
+        },
         {
           path:'/fundis',
           name:'fundis',
@@ -56,7 +71,10 @@ Vue.use(Router);
         {
           path:'/services/edit',
           name:'edit_service',
-          component:EditService
+          component:EditService,
+          props:(service)=>({
+            service:service
+          })
         },
         {
           path:'/companies',

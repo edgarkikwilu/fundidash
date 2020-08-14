@@ -1,11 +1,12 @@
 <template>
     <div id="main-container">
         <b-row style="width:100%;">
-            <b-col cols="2" style="margin:0px;padding:0px;height:100vh; position:fixed;top:0px" class="bg-no-repeat bg-cover" :style="{ backgroundImage: `url(${backgroundUrl})` }">
+            <!--  :style="{ backgroundImage: `url(${backgroundUrl})` }" -->
+            <b-col cols="2" style="margin:0px;padding:0px;height:100vh; position:fixed;top:0px;background-color:#DE0B15 !important" class="bg-no-repeat bg-cover">
                 <sidebar></sidebar>
             </b-col>
             <b-col cols="10" style="margin:0px;padding:0px;margin-left:220px;box-shadow:none !important;">
-                <b-navbar toggleable="lg" type="light" sticky variant="light" style="box-shadow:none !important;">
+                <b-navbar toggleable="lg" sticky class="navbar-style">
                     <b-navbar-toggle target="nav-collapse"></b-navbar-toggle>
                     <b-collapse id="nav-collapse">
                         <b-navbar-nav>
@@ -40,6 +41,11 @@ export default {
 }
 </script>
 <style lang="scss">
+    .navbar-style{
+        box-shadow:none !important;
+        background-color:#fff !important;
+        margin-bottom: 3px !important;
+    }
     .main-container{
         width: 100vw;
         overflow-x: hidden !important;

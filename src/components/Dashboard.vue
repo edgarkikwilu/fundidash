@@ -10,15 +10,15 @@
                             </span>
                         </b-media-aside>
                         <b-media-body style="margin-left:-45px">
-                            <p class="metric_value">19,300</p>
+                            <p class="metric_value">{{info.service_providers}}</p>
                             <p class="metric_label">Service Providers</p>
                         </b-media-body>
                     </b-media>
                     <b-card-footer class="transparent footer" style="border:none; margin-bottom:0px;padding-bottom:0px;">
                         <div class="d-flex flex-row flex-nowrap" style="margin-left:-25px;">
                             <b-icon icon="caret-up-fill" class="caret px-2"></b-icon>
-                            <span class="active_number px-2">533</span>
-                            <span class="active_text px-2">All Services</span>
+                            <span class="active_number px-2">{{info.active_fundis}}</span>
+                            <span class="active_text px-2">Active this week</span>
                         </div>
                     </b-card-footer>
                 </b-card>
@@ -32,15 +32,15 @@
                             </span>
                         </b-media-aside>
                         <b-media-body  style="margin-left:-45px">
-                            <p class="metric_value">19,300</p>
-                            <p class="metric_label">Completed Requests</p>
+                            <p class="metric_value">{{info.services}}</p>
+                            <p class="metric_label">All Services</p>
                         </b-media-body>
                     </b-media>
                     <b-card-footer class="transparent footer" style="border:none; margin-bottom:0px;padding-bottom:0px;">
                         <div class="d-flex flex-row flex-nowrap" style="margin-left:-25px;">
                             <b-icon icon="caret-up-fill" class="caret px-2"></b-icon>
-                            <span class="active_number px-2">533</span>
-                            <span class="active_text px-2">Active this week</span>
+                            <span class="active_number px-2">{{info.most_requested}}</span>
+                            <span class="active_text px-2">Most Requested</span>
                         </div>
                     </b-card-footer>
                 </b-card>
@@ -54,14 +54,14 @@
                             </span>
                         </b-media-aside>
                         <b-media-body  style="margin-left:-45px">
-                            <p class="metric_value">19,300</p>
-                            <p class="metric_label">Active Fundis</p>
+                            <p class="metric_value">{{info.completed_requests}}</p>
+                            <p class="metric_label">Completed Requests</p>
                         </b-media-body>
                     </b-media>
                     <b-card-footer class="transparent footer" style="border:none; margin-bottom:0px;padding-bottom:0px;">
                         <div class="d-flex flex-row flex-nowrap" style="margin-left:-25px;">
                             <b-icon icon="caret-up-fill" class="caret px-2"></b-icon>
-                            <span class="active_number px-2">533</span>
+                            <span class="active_number px-2">0</span>
                             <span class="active_text px-2">Active this week</span>
                         </div>
                     </b-card-footer>
@@ -70,15 +70,15 @@
             <b-col cols="4" class="mt-5">
                 <b-card class="profit_card" style="box-shadow:none !important;">
                     <p class="title">FUNDI FASTA PROFIT</p>
-                    <p class="profit mt-4">Tshs 23,000,000</p>
+                    <p class="profit mt-4">Tshs {{info.profit}}</p>
                     <b-card-footer class="transparent footer" style="border:none; margin-bottom:0px;padding-bottom:0px;">
                         <div class="d-flex flex-row flex-nowrap" style="margin-left:-25px;">
                             <b-icon icon="caret-up-fill" class="caret px-2"></b-icon>
                             <span class="perce_profit px-2">16%</span>
-                            <span class="perce_profit_text px-2">Since last month</span>
+                            <span class="perce_profit_text px-1">Since last month</span>
                             <b-icon icon="download" class="caret pr-2 px-2"></b-icon>
                             <!-- <span class="perce_profit px-2">16%</span> -->
-                            <span class="perce_profit_text px-2 pl-1">Download Financial Report</span>
+                            <span class="perce_profit_text px-1 ml-2">Download Financial Report</span>
                         </div>
                     </b-card-footer>
                 </b-card>
@@ -110,15 +110,15 @@
                     <div class="data-container d-flex flex-column mt-5">
                         <div class="data">
                             <p class="label">Accepted</p>
-                            <p class="value">449</p>
+                            <p class="value">{{info.accepted_requests}}</p>
                         </div>
                         <div class="data">
                             <p class="label">Rejected</p>
-                            <p class="value">429</p>
+                            <p class="value">{{info.rejected_requests}}</p>
                         </div>
                         <div class="data">
                             <p class="label">Total Requests</p>
-                            <p class="value">1m</p>
+                            <p class="value">{{info.total_requests}}</p>
                         </div>
                     </div>
                 </b-col>
@@ -136,7 +136,18 @@ export default {
         return {
             today:{'0': 2, '1': 5, '2': 2, '3': 10, '4': 9, '5': 15, '6': 10, '7': 11, '8': 15, '9': 5, '10': 7, '11': 6, '12': 13},
             yesterday:{'0': 4, '1': 7, '2': 1, '3': 17, '4': 19, '5': 10, '6': 9, '7': 13, '8': 11, '9': 9, '10': 6, '11': 6, '12': 12},
-            data:""
+            data:"",
+            info:{
+                service_providers:0,
+                active_fundis:0,
+                services:0,
+                most_requested:0,
+                completed_requests:0,
+                total_requests:0,
+                accepted_requests:0,
+                rejected_requests:0,
+                profit:0
+            }
         }
     },
     watch:{
@@ -144,19 +155,46 @@ export default {
     },
     mounted(){
         this.data =this.today
+        console.log(localStorage.access_token)
+        this.init()
+    },
+    methods:{
+        init(){
+            var header = {
+                headers:{
+                    'Accept':'application/json',
+                    'Content-Type':'application/json',
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Authorization':'Bearer '+localStorage.access_token
+                }
+            }
+            this.axios.get('fundi/summary',header).then(
+                response=>{
+                    this.info = response.data
+                    console.log(response)
+                }
+            ).catch(error=>{
+                console.log(error)
+                console.log(error.response.status)
+            })
+        }
     }
 }
 </script>
 
 <style lang="scss">
     .metric_value{
+        text-align: start !important;
         margin: 0px;
         padding: 0px;
+        margin-left: 30%;
         font-size: 24px;
     }
     .metric_label{
+        text-align: start !important;
         margin: 0px;
         padding: 0px;
+        margin-left: 30%;
         font-size: 10px;
         color: #90A0B7;
     }
