@@ -1,5 +1,5 @@
 <template>
-    <div class="container-projects">
+    <div class="container-projects" style="font-family:voda-rg !important;">
         <div class="top">
             <div class="info pt-3">
                 <div class="name">Edgar Emil Kikwilu</div>

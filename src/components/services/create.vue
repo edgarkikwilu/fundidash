@@ -1,5 +1,5 @@
 <template>
-    <b-container>
+    <b-container style="font-family:voda-rg !important;">
         <b-card style="box-shadow:none !important; margin-top:100px" class="card-container">
             <b-row>
             <b-col cols="6" class="d-flex flex-column flex-nowrap clearfix">

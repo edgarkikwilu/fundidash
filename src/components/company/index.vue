@@ -1,7 +1,7 @@
 <template>
-    <b-container>
+    <b-container style="font-family:voda-rg !important;">
         <b-row>
-            <b-col cols="12" class="mt-5" style="float:left;text-align:left;"><strong>BENET , SEE  WHAT HAPPENED TO SERVICES</strong></b-col>
+            <b-col cols="12" class="mt-5" style="float:left;text-align:left;text-transform: uppercase;"><strong>{{username}} , SEE  WHAT HAPPENED TO SERVICES</strong></b-col>
             <b-col cols="12">
                 <div class="d-flex flex-row flex-nowrap breadcrumb_style">
                     <span>Dashboard</span>
@@ -91,6 +91,7 @@ export default {
     name:'companies',
     data:function(){
         return {
+            username:'',
             companies:[
                 {id:1,img:'report.png',name:'Electronics Repair',location:'location xyz',service_category:"electronic repair",subcategories:"sub1,sub2,sub3",tinno:'tin22x',registrationno:'reg123',businessno:'business one',region:'dar es salaam',address:'kimara mwisho',phone:'255656724750',email:'ekikwilu@gmail.com',website:'patanyumba.com'},
                 {id:1,img:'report.png',name:'House Cleaning',location:'location xyz',service_category:"electronic repair",subcategories:"sub1,sub2,sub3",tinno:'tin22x',registrationno:'reg123',businessno:'business one',region:'dar es salaam',address:'kimara mwisho',phone:'255656724750',email:'ekikwilu@gmail.com',website:'patanyumba.com'},
@@ -100,6 +101,7 @@ export default {
         }
     },
     mounted(){
+        this.username = localStorage.username
         this.axios.get("http://localhost:8000/services").then(
             response=>{
                 console.log(response)

@@ -1,7 +1,7 @@
 <template>
-    <b-container>
+    <b-container class="font-voda">
         <b-row>
-            <b-col cols="12" class="mt-5" style="float:left;text-align:left;"><strong>BENET , SEE  WHAT HAPPENED TO SERVICES</strong></b-col>
+            <b-col cols="12" class="mt-5" style="float:left;text-align:left;text-transform: uppercase;"><strong>{{username}} , SEE  WHAT HAPPENED TO SERVICES</strong></b-col>
             <b-col cols="12">
                 <div class="d-flex flex-row flex-nowrap breadcrumb_style">
                     <span>Dashboard</span>
@@ -73,11 +73,11 @@
                                     <td style="text-align:left !important;"></td>
                                     <td style="text-align:left !important;">
                                         <div class="flex-row flex-nowrap">
-                                            <div>
+                                            <div class="d-flex flex-row flex-nowrap">
                                                 <!-- <b-icon @click="menu(fundi)" icon="three-dots-vertical" class="three-dots"></b-icon> -->
                                                  <b-icon @click="onEdit(fundi)" icon="pencil" class="ml-4 mr-4 cursor-style"></b-icon>
-                                                 <b-icon v-if="fundi.status===1" @click="deactivate(fundi)" icon="power" class="icon online">Deactivate</b-icon>
-                                                <b-icon v-if="fundi.status===0" @click="deactivate(fundi,index)" icon="power" class="icon offline">Activate</b-icon>
+                                                 <div v-if="fundi.status!==3" @click="deactivate(fundi)" icon="power" class="cursor-style power online">Deactivate</div>
+                                                <div v-if="fundi.status===3" @click="deactivate(fundi,index)" icon="power" class="cursor-style power offline">Activate</div>
                                                 <!-- <div class="context-menu">
                                                     <ul>
                                                         <li>
@@ -114,6 +114,7 @@ export default {
             active_fundis:0,
             active_fundis_week:0,
             isOnline:false,
+            username:'',
             fundis:[
                 // {id:1,img:'report.png',name:'Electronics Repair',fundiid:'1232455',category:"Electronic",noofsubcategories:32,subcategories:[{name:'sub one',image:'image one'}]},
                 // {id:1,img:'report.png',name:'House Cleaning',fundiid:'1249955',category:"PLumbing",noofsubcategories:7,subcategories:[{name:'sub two',image:'image two'}]},
@@ -123,6 +124,7 @@ export default {
         }
     },
     mounted(){
+        this.username = localStorage.username
         var header = {
             headers:{
                 'Accept':'application/json',
@@ -193,8 +195,8 @@ export default {
                     
                     console.log(i)
                     console.log(actual)
-                    if(actual.status==1){actual.status = 0}
-                    else{actual.status = 1}
+                    if(actual.status==3){actual.status = 1}
+                    else{actual.status = 3}
                     console.log('test')
 
                 }
@@ -208,17 +210,23 @@ export default {
 </script>
 
 <style lang="scss">
+    .font-voda{
+        font-family: voda-rg !important;
+    }
     .breadcrumb_style{
         color: #535353;
     }
     .filter{
         height: 36px;
         padding-top: 80px;
+        text-transform: capitalize;
     }
     .btn_new{
         height: 36px;
-        padding-top: 4px !important;
-        margin-top: 20px !important;
+        // padding-top: 4px !important;
+        // margin-top: 20px !important;
+        position: absolute;
+        top: 18px;
     }
     .btn_deactivate{
           width: auto !important;
@@ -248,18 +256,6 @@ export default {
         color: #B7BE46;
     }
     .online{
-        color: #B7BE46 !important;
-        width: auto !important;
-        box-shadow: none !important;
-        border-color: #B7BE46 !important;
-        background-color: white !important;
-        font-family: Vodafone Rg !important;
-        font-style: normal !important;
-        font-weight: bold !important;
-        font-size: 10px !important;
-        line-height: 16px !important;
-        /* identical to box height, or 160% */
-        text-align: center !important;
         color: #B7BE46 !important;
     }
     .offline{
@@ -296,5 +292,20 @@ export default {
             padding:10px;
             width: 120px;
         }
+    }
+    .power{
+        font-family: voda-bold !important;
+        width: auto !important;
+        box-shadow: none !important;
+        // border-color: #B7BE46 !important;
+        // background-color: white !important;
+        font-family: Vodafone Rg !important;
+        font-style: normal !important;
+        font-weight: bold !important;
+        font-size: 12px !important;
+        line-height: 16px !important;
+        /* identical to box height, or 160% */
+        text-align: center !important;
+        // color: #B7BE46 !important;
     }
 </style>

@@ -1,5 +1,5 @@
 <template>
-    <b-container>
+    <b-container style="font-family:voda-rg !important;">
         <b-row v-if="isActive">
             <b-col cols="12" offset="0">
                 <b-card class="mt-5 remove-box-shadow">

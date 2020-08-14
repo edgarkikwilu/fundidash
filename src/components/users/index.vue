@@ -1,7 +1,7 @@
 <template>
     <b-container>
         <b-row>
-            <b-col cols="12" class="mt-5" style="float:left;text-align:left;"><strong>BENET , SEE  WHAT HAPPENED TO SERVICES</strong></b-col>
+            <b-col cols="12" class="mt-5" style="float:left;text-align:left;text-transform: uppercase;"><strong>{{username}} , SEE  WHAT HAPPENED TO SERVICES</strong></b-col>
             <b-col cols="12">
                 <div class="d-flex flex-row flex-nowrap breadcrumb_style">
                     <span>Dashboard</span>
@@ -94,6 +94,7 @@ export default {
         return {
             totalusers:0,
             active:0,
+            username:'',
             users:[
                 {id:1,profile:'report.png',location:'Kimara mwisho, Ubungo',name:'Edgar Emil Kikwilu',projectsDone:123,projects:[{id:1,name:'project xyz',description:'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua',price:20000,when:'12 Aug 2020',image:'image one'}]},
                 {id:2,profile:'report.png',location:'Kimara mwisho, Ubungo',name:'Edgar Emil Kikwilu',projectsDone:124,projects:[{id:2,name:'project xyz',description:'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua',price:20000,when:'12 Aug 2020',image:'image two'}]},
@@ -103,6 +104,7 @@ export default {
         }
     },
     mounted(){
+        this.username = localStorage.username
       this.init()
     },
     methods:{

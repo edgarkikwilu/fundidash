@@ -1,5 +1,5 @@
 <template>
-    <b-container>
+    <b-container style="font-family:voda-rg !important;">
         <b-row>
             <b-col cols="2" class="mt-5">
                 <b-card style="width:213px;box-shadow:none !important;" class="top-cards-first">

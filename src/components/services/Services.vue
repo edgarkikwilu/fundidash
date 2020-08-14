@@ -1,7 +1,8 @@
 <template>
     <b-container>
         <b-row>
-            <b-col cols="12" class="mt-5" style="float:left;text-align:left;"><strong>BENET , SEE  WHAT HAPPENED TO SERVICES</strong></b-col>
+            <b-col cols="12" class="mt-5" style="float:left;text-align:left;text-transform: uppercase;"><strong>{{username}} , SEE  WHAT HAPPENED TO SERVICES</strong></b-col>
+
             <b-col cols="12">
                 <div class="d-flex flex-row flex-nowrap breadcrumb_style">
                     <span>Dashboard</span>
@@ -93,10 +94,12 @@ export default {
         return {
             totalservices:0,
             active:0,
-            services:[]
+            services:[],
+            username:''
         }
     },
     mounted(){
+        this.username = localStorage.username
         var header = {
             headers:{
                 'Accept':'application/json',

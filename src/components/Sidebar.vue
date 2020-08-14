@@ -1,11 +1,11 @@
 <template>
-    <div>
+    <div style="font-family:voda-rg !important;">
         <div class="logo-container">
             <img src="../assets/logo.png" class="logo" alt="">
         </div>
         <div class="separator"></div>
         <b-list-group-item class="d-flex align-items-center user">
-            <b-avatar class="mr-3"></b-avatar>
+            <b-avatar class="mr-3 ml-2"></b-avatar>
             <div class="identifier-column">
                 <span class="mr-auto name">{{username}}</span>
                 <span class="role">Super Admin</span>
@@ -48,10 +48,10 @@
                 <div class="text-left-style">Reporting</div>
             </b-list-group-item>
 
-            <b-list-group-item class="transparent nav-text ml-3 d-flex justify-content-between align-items-center" @click="logout">
+            <!-- <b-list-group-item class="transparent nav-text ml-3 d-flex justify-content-between align-items-center" @click="logout">
                 <b-icon icon="bar-chart"></b-icon>
                 <div class="text-left-style">Logout</div>
-            </b-list-group-item>
+            </b-list-group-item> -->
         </b-list-group>
 
         <b-modal hide-header-close="true" hide-footer="true" style="width:200px !important" hide-header="true" id="error-modal" title="something went wrong">
