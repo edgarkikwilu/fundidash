@@ -63,8 +63,9 @@ export default {
     data:function(){
         return {
             form:{},
-            catname:"TEST",
-            imageData: "https://picsum.photos/30",
+            catname:"",
+            catimageUpdated:false,
+            imageData: "na",
             subcatimagedata:"",
             catimage:undefined,
             subcatimage:undefined,
@@ -81,7 +82,6 @@ export default {
     },
     methods:{
         remove(index){
-            console.log(index)
              var headers = {
                 headers:{
                     'Authorization':'Bearer '+localStorage.access_token,
@@ -89,16 +89,12 @@ export default {
                     'Content-Type':'application/json'
                 }
             }
-            // var body = {
-            //     id:this.subcategories[index].id
-            // }
-            console.log(this.form.subcategories[index])
+
             this.axios.get("services/subcategory/remove/"+this.form.subcategories[index].id,headers)
             .then(
                 response=>{
                     console.log(response)
                     this.form.subcategories.splice(index,1)
-                    alert("success")
                 }
             ).catch(error=>{
                 console.log(error)
@@ -126,8 +122,9 @@ export default {
             }
             var body = {
                 id:this.form.id,
-                title:this.catname,
-                image:this.catimage,
+                title:this.form.name,
+                image:this.form.img,
+                newImage:this.imageData,
                 subcategories:this.form.subcategories
             }
             console.log(body)
@@ -135,10 +132,16 @@ export default {
             .then(
                 response=>{
                     console.log(response)
+                    if(response.data['status_code']==200){
+                        this.$router.push("/services")
+                    }else{
+                        alert(response.data['message'])
+                    }
                 }
             ).catch(error=>{
                 console.log(error)
-                })
+                alert("Something went wrong. Please try again")
+            })
         },
          previewImage: function(event) {
             // Reference to the DOM input element

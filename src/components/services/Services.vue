@@ -73,8 +73,13 @@
                                     <td>
                                         <div class="flex-row flex-nowrap">
                                             <div>
-                                                <b-icon icon="three-dots-vertical"></b-icon>
+                                                <b-icon icon="three-dots-vertical" class="cursor-style" @click="showMenu(service.name,service.id)"></b-icon>
                                                 <b-icon @click="onEdit(service)" icon="pencil" class="ml-3 cursor-style"></b-icon>
+                                                <div ref="{{$service.name}}" class="context-menus">
+                                                    <ul style="list-style-type: none;">
+                                                        <li>Delete</li>
+                                                    </ul>
+                                                </div>
                                             </div>
                                         </div>
                                     </td>
@@ -114,20 +119,18 @@ export default {
                 if(response.data['status_code']==200){
                     this.totalservices = response.data['totalservices']
                     this.active = response.data['active']
-                    // this.services = response.data['data']
 
                     for(var i=0;i<response.data['data'].length;i++){
                         var service = response.data['data'][i]
                         var subcategories_ = []
                         for(var j=0;j<service.subcategories.length;j++){
                             var sub = service.subcategories[j]
-                            // console.log(sub)
+
                             var obj_ = {
                                 id:sub.id,
                                 name:sub.title,
                                 img:sub.image_url
                             }
-                            // console.log(obj_)
                             subcategories_.push(obj_)
                         }   
                         var obj = {
@@ -140,7 +143,6 @@ export default {
                             subcategories:subcategories_
                         }
                         this.services.push(obj)
-                        console.log(service)
                     }
                 }else{
                     console.log("something went wrong")
@@ -158,6 +160,11 @@ export default {
         onEdit(service){
             console.log(service)
             this.$router.push({name:"edit_service",params:{service:service}})
+        },
+        showMenu(name,id){
+            console.log(name+" "+id)
+            this.$refs['name'].element.classList.remove('context-menus')
+            this.$refs['name'].element.classList.add('context-menu-show')
         }
     }
 }
@@ -188,5 +195,11 @@ export default {
     .cursor-style:hover{
         cursor: pointer;
         color: #B7BE46;
+    }
+    .context-menus{
+        display: none;
+    }
+    .context-menu-show{
+        display: block;
     }
 </style>

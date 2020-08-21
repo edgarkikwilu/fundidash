@@ -29,10 +29,10 @@
                     </b-row>
                     <b-row>
                         <b-col cols="3" offset-md="1" class="mt-3">
-                            <b-form-select class="input-border" v-model="form.category" :options="categories"></b-form-select>
+                            <b-form-select class="input-border" v-model="form.service" :options="services"></b-form-select>
                         </b-col>
                         <b-col cols="3" class="mt-3">
-                            <b-form-select class="input-border" v-model="form.subcategory" :options="subcategories"></b-form-select>
+                            <b-form-select class="input-border" multiple v-model="form.subservices" :options="subservices"></b-form-select>
                         </b-col>
                     </b-row>
                     <b-row class="mt-5">
@@ -95,11 +95,11 @@ export default {
     data:function(){
         return {
             isloading:false,
-            isActive:false,
-            categories:[{value:null,text:'select category'},{value:'1',text:'Electronics'},{value:'2',text:'Plumbing'},{value:'3',text:'Wood work'},{value:'4',text:'Furniture'}],
-            subcategories:[{value:null,text:'select sub category'},{value:'1',text:'Electronics'},{value:'2',text:'Plumbing'},{value:'3',text:'Wood work'},{value:'4',text:'Furniture'}],
-            form:{name:'',tinno:'',registrationno:'',businessno:'',category:'',subcategory:'',region:'',address:'',phone:'',email:'',website:''},
-            regions:[{value:1,text:'Dar es salaam'},{value:1,text:'Arusha'},{value:1,text:'Mwanza'},{value:1,text:'Morogoro'},{value:1,text:'Dodoma'}]
+            isActive:true,
+            services:[{value:null,text:'select category'},{value:'1',text:'Electronics'},{value:'2',text:'Plumbing'},{value:'3',text:'Wood work'},{value:'4',text:'Furniture'}],
+            subservices:[{value:null,text:'select sub category'},{value:'1',text:'Electronics'},{value:'2',text:'Plumbing'},{value:'3',text:'Wood work'},{value:'4',text:'Furniture'}],
+            form:{name:'',tinno:'',registrationno:'',businessno:'',service:'',subservices:[],region:'',address:'',phone:'',email:'',website:''},
+            regions:[{value:"Dar es salaam",text:'Dar es salaam'},{value: "Arusha",text:'Arusha'},{value:"Mwanza",text:'Mwanza'},{value:"Morogoro",text:'Morogoro'},{value:"Morogoro",text:'Dodoma'}]
         }
     },
     mounted(){
@@ -122,11 +122,14 @@ export default {
             this.isloading = true
             var header = {
                 headers:{
-                    'Authorization':'',
-                    'Accept':'application/json'
+                    'Authorization':'Bearer '+localStorage.access_token,
+                    'Accept':'application/json',
+                    'Content-Type':'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
                 }
             }
-            this.axios.post('/company/save',this.form,header).then(
+            this.form.subservices = this.form.subservices.join(",")
+            this.axios.post('company/store',this.form,header).then(
                 response=>{
                     this.isloading = false
                     console.log(response)

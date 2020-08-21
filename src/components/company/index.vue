@@ -20,14 +20,14 @@
                             </span>
                         </b-media-aside>
                         <b-media-body style="margin-left:-30px">
-                            <p class="metric_value ml-5" style="float:left;">63</p>
+                            <p class="metric_value ml-5" style="float:left;">{{total}}</p>
                             <p class="metric_label ml-5" style="float:left;">Number of companies</p>
                         </b-media-body>
                     </b-media>
                     <b-card-footer class="transparent footer" style="border:none; margin-bottom:0px;padding-bottom:0px;">
                         <div class="d-flex flex-row flex-nowrap" style="margin-left:-25px;">
                             <b-icon icon="caret-up-fill" class="caret px-2"></b-icon>
-                            <span class="active_number px-2">533</span>
+                            <span class="active_number px-2">{{active}}</span>
                             <span class="active_text px-2">Active this week</span>
                         </div>
                     </b-card-footer>
@@ -92,25 +92,46 @@ export default {
     data:function(){
         return {
             username:'',
-            companies:[
-                {id:1,img:'report.png',name:'Electronics Repair',location:'location xyz',service_category:"electronic repair",subcategories:"sub1,sub2,sub3",tinno:'tin22x',registrationno:'reg123',businessno:'business one',region:'dar es salaam',address:'kimara mwisho',phone:'255656724750',email:'ekikwilu@gmail.com',website:'patanyumba.com'},
-                {id:1,img:'report.png',name:'House Cleaning',location:'location xyz',service_category:"electronic repair",subcategories:"sub1,sub2,sub3",tinno:'tin22x',registrationno:'reg123',businessno:'business one',region:'dar es salaam',address:'kimara mwisho',phone:'255656724750',email:'ekikwilu@gmail.com',website:'patanyumba.com'},
-                {id:1,img:'report.png',name:'Home Internet',location:'location xyz',service_category:"electronic repair",subcategories:"sub1,sub2,sub3",tinno:'tin22x',registrationno:'reg123',businessno:'business one',region:'dar es salaam',address:'kimara mwisho',phone:'255656724750',email:'ekikwilu@gmail.com',website:'patanyumba.com'},
-                {id:1,img:'report.png',name:'Car Repair',location:'location xyz',service_category:"electronic repair",subcategories:"sub1,sub2,sub3",tinno:'tin22x',registrationno:'reg123',businessno:'business one',region:'dar es salaam',address:'kimara mwisho',phone:'255656724750',email:'ekikwilu@gmail.com',website:'patanyumba.com'}
-            ]
+            companies:[],
+            total:0,
+            active:0
         }
     },
     mounted(){
         this.username = localStorage.username
-        this.axios.get("http://localhost:8000/services").then(
-            response=>{
-                console.log(response)
-            }
-        ).catch(error=>{
-            console.log(error)
-        })
+        this.init()
     },
     methods:{
+        init(){
+            var header = {
+                headers:{
+                    'Authorization':'Bearer '+localStorage.access_token,
+                    'Accept':'application/json',
+                    'Content-Type':'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            }
+            this.axios.get("company/all",header).then(
+                response=>{
+                    if(response.data['status_code'==200]){
+                        var companies = response.data['companies']
+                        this.total = response.data['count']
+                        this.active = 0
+
+                        for (var i=0;i<companies.length;i++){
+                            var company = companies[i]
+                            var obj = {id:company.id,img:'report.png',name:company.name,location:company.address,service_category:company.service
+                                ,subcategories:company.subservices,tinno:company.tinNumber,registrationno:company.registrationNumber,businessno:company.businessNumber,region:company.region
+                                ,address:company.address,phone:company.contactNumber,email:company.email,website:company.website}
+                            this.companies.push(obj)
+                        }
+                    }
+                    console.log(response)
+                }
+            ).catch(error=>{
+                console.log(error)
+            })
+        },
         navigate(page){
             this.$router.push({name:page})
         },
