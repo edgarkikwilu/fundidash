@@ -29,10 +29,16 @@
                     </b-row>
                     <b-row>
                         <b-col cols="3" offset-md="1" class="mt-3">
-                            <b-form-select class="input-border" v-model="form.category" :options="categories"></b-form-select>
+                            <b-form-select class="input-border" v-model="selected_id" @input="updateSubserviceList()">
+                                <b-form-select-option :value="undefined" disabled>--Select Service--</b-form-select-option>
+                                <b-form-select-option v-for="service in services" :value="service.value" :key="service.value">{{service.text}}</b-form-select-option>
+                            </b-form-select>
                         </b-col>
                         <b-col cols="3" class="mt-3">
-                            <b-form-select class="input-border" v-model="form.subcategory" :options="subcategories"></b-form-select>
+                            <b-form-select class="input-border" multiple v-model="selected_subservices">
+                                <b-form-select-option :value="undefined" disabled>--Select SubServices--</b-form-select-option>
+                                <b-form-select-option v-for="subservice in subservices" :value="subservice.value" :key="subservice.value">{{subservice.text}}</b-form-select-option>
+                            </b-form-select>
                         </b-col>
                     </b-row>
                     <b-row class="mt-5">
@@ -56,7 +62,10 @@
                     </b-row>
                     <b-row class="mt-5">
                         <b-col cols="3" offset-md="1">
-                            <b-form-select class="input-border" v-model="form.region" :options="regions"></b-form-select>
+                            <b-form-select class="input-border" v-model="form.region">
+                                <option value="" disabled>-- Please select region --</option>
+                                <b-form-select-option v-for="region in regions" :value="region.value" :key="region.value">{{region.text}}</b-form-select-option>
+                            </b-form-select>
                         </b-col>
                         <b-col cols="3">
                             <b-input v-model="form.address" class="input-border" placeholder="Address"></b-input>
@@ -97,10 +106,12 @@ export default {
             isloading:false,
             isActive:true,
             object:undefined,
-            categories:[{value:null,text:'select category'},{value:'1',text:'Electronics'},{value:'2',text:'Plumbing'},{value:'3',text:'Wood work'},{value:'4',text:'Furniture'}],
-            subcategories:[{value:null,text:'select sub category'},{value:'1',text:'Electronics'},{value:'2',text:'Plumbing'},{value:'3',text:'Wood work'},{value:'4',text:'Furniture'}],
-            form:{id:1,name:'',tinno:'',location:'',registrationno:'',businessno:'',category:'',subcategory:'',region:'',address:'',phone:'',email:'',website:''},
-            regions:[{value:1,text:'Dar es salaam'},{value:1,text:'Arusha'},{value:1,text:'Mwanza'},{value:1,text:'Morogoro'},{value:1,text:'Dodoma'}]
+            selected_id:0,
+            selected_subservices: [],
+            services:[],
+            subservices:[],
+            form:{id:1,name:'',tinno:'',location:'',registrationno:'',businessno:'',service:'',selected_id:0,selected_subservices:'',subservices:'',region:'',address:'',phone:'',email:'',website:''},
+            regions:[{value:"Dar es salaam",text:'Dar es salaam'},{value: "Arusha",text:'Arusha'},{value:"Mwanza",text:'Mwanza'},{value:"Morogoro",text:'Morogoro'},{value:"Morogoro",text:'Dodoma'}]
         }
     },
     mounted(){
@@ -108,10 +119,55 @@ export default {
         this.object = this.company.params.company.location
         this.form.name = this.company.params.company.name
         this.form = this.company.params.company
-        // this.company = company
+        this.selected_id = this.form.selected_id
+        console.log("selected subservices?>> "+this.form.subservices)
+        // var subs = this.form.selected_subservices
+        // this.selected_subservices = subservices.split(",")
+        // console.log("selected subservice:  "+this.selected_subservices)
+        this.init()
     },
     props:['company'],
     methods:{
+        init(){
+            var header = {
+                headers:{
+                    'Authorization':'Bearer '+localStorage.access_token,
+                    'Accept':'application/json',
+                    'Content-Type':'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            }
+            this.axios.get('services/all',header).then(
+                response=>{
+                    this.isloading = false
+                    console.log(response)
+                    if (response.data['status_code']==200){
+                        var services = response.data['data']
+                        for (var i=0;i<services.length;i++){
+                            var service = services[i]
+                            var obj = {value:service.id,text:service.name,subservices:service.subcategories}
+                            this.services.push(obj)
+                        }
+                        this.updateSubserviceList()
+                        console.log(this.services)
+                    }else if(response.data['status_code']==402){
+                        alert("Email already taken")
+                    }
+                }
+            ).catch(error=>{
+                this.isloading = false
+                console.log(error)
+                var code = error.response.status
+
+                if (code == 401){
+                    alert('Please login first, you are not authenticated')
+                }else if(code == 500){
+                    alert('Server error, please try again later')
+                }else{
+                    alert('Unkown error has occured')
+                }
+            })
+        },
         toggle(tab){
             console.log(tab)
             if(tab == "company")this.isActive=true
@@ -125,23 +181,56 @@ export default {
             this.isActive = true
         },
         submit(){
-            this.isloading = true
-            var header = {
-                headers:{
-                    'Authorization':'',
-                    'Accept':'application/json'
+            console.log(this.form)
+            if(this.selected_subservices.length==0){
+                alert("please select subservices first")
+            }else{
+                this.isloading = true
+                var header = {
+                    headers:{
+                        'Authorization':'Bearer '+localStorage.access_token,
+                        'Accept':'application/json',
+                        'Content-Type':'application/json',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                }
+                this.form.service = this.selected_id
+                var subs = this.selected_subservices
+                this.form.subservices = subs.join(",")
+                this.axios.post('company/update',this.form,header).then(
+                    response=>{
+                        this.isloading = false
+
+                        if(response.data['status_code']==200){
+                            this.$router.push({name:'companies'})
+                        }else{
+                            alert("Please try again to submit the form!")
+                        }
+                    }
+                ).catch(error=>{
+                    this.isloading = false
+                    console.log(error)
+                    alert("Sorry, something went wrong!")
+                })
+            }
+        },
+        updateSubserviceList(){
+            var service = null
+            for (var i=0;i<this.services.length;i++){
+                var cat = this.services[i]
+                // var selected = this.form.service
+                if(cat.value==this.selected_id){
+                    service = cat
                 }
             }
-            this.axios.post('/company/save',this.form,header).then(
-                response=>{
-                    this.isloading = false
-                    console.log(response)
-                    this.$router.push({name:'companies'})
-                }
-            ).catch(error=>{
-                this.isloading = false
-                console.log(error)
-            })
+            this.subservices = []
+            console.log(service)
+            for (var j=0;j<service.subservices.length;j++){
+                var sub = service.subservices[j]
+                var obj = {value:sub.id,text:sub.title}
+                console.log(obj)
+                this.subservices.push(obj)
+            }
         }
     }
 }

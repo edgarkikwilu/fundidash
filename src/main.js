@@ -29,7 +29,7 @@ Chartkick.options = {
 Vue.config.productionTip = false
 // Vue.prototype.$isAuth = false
 // axios.defaults.baseURL = "http://dev.smartcodes.co.tz/fundifasta/public/api/dashboard/";
-axios.defaults.baseURL = "http://localhost:8000/api/dashboard/";
+axios.defaults.baseURL = "http://localhost:8001/api/dashboard/";
 
 new Vue({
   router,

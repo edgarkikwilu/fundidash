@@ -36,14 +36,14 @@
                     </b-row>
                     <b-row>
                         <b-col cols="3" offset-md="1" class="mt-3">
-                            <b-form-select class="input-border" v-model="category" :options="categories">
+                            <b-form-select class="input-border" v-model="form.service_id" @input="updateSubserviceList" :options="services">
                                 <template v-slot:first>
                                     <b-form-select-option :value="null" disabled>-- Please select category --</b-form-select-option>
                                 </template>
                             </b-form-select>
                         </b-col>
                         <b-col cols="3" class="mt-3">
-                            <b-form-select class="input-border" v-model="form.subcategory" placeholder="Subcategory" :options="subcategories">
+                            <b-form-select class="input-border" multiple v-model="selected_subservices" placeholder="Subcategory" :options="subservices">
                                 <template v-slot:first>
                                     <b-form-select-option :value="null" disabled>-- Please select subcategory --</b-form-select-option>
                                 </template>
@@ -121,25 +121,67 @@ export default {
         return {
             isloading:false,
             isActive:true,
-            category:'',
-            subcategory:'',
-            categories:[{value:null,text:'select category'},{value:'1',text:'Electronics'},{value:'2',text:'Plumbing'},{value:'3',text:'Wood work'},{value:'4',text:'Furniture'}],
-            subcategories:[{value:null,text:'select sub category'},{value:'1',text:'Electronics'},{value:'2',text:'Plumbing'},{value:'3',text:'Wood work'},{value:'4',text:'Furniture'}],
-            form:{nida:'',gender:'',fname:'',lname:'',category:'',subcategory:'',costing:0,region:'',address:'',phone:'',email:'',website:'',head:''},
-            regions:[{value:null,text:'Regions'},{value:1,text:'Dar es salaam'},{value:1,text:'Arusha'},{value:1,text:'Mwanza'},{value:1,text:'Morogoro'},{value:1,text:'Dodoma'}]
+            service:'',
+            service_id:0,
+            subservice:'',
+            selected_subservices: [],
+            services:[],
+            subservices:[],
+            form:{nida:'',gender:'',fname:'',lname:'',service:'',subservice:'',service_id:0,costing:0,region:'',address:'',phone:'',email:'',website:'',head:''},
+            regions:[{value:"Dar es salaam",text:'Dar es salaam'},{value: "Arusha",text:'Arusha'},{value:"Mwanza",text:'Mwanza'},{value:"Morogoro",text:'Morogoro'},{value:"Morogoro",text:'Dodoma'}]
         }
     },
     mounted(){
-        this.form = this.company.params.fundi
+        this.form = this.fundi.params.fundi
+        console.log(this.form)
+        this.init()
     },
     props:['fundi'],
     watch:{
-        category:function(){
+        service:function(){
             this.form.category = this.category
             this.loadSubcategories()
         }
     },
     methods:{
+        init(){
+            var header = {
+                headers:{
+                    'Authorization':'Bearer '+localStorage.access_token,
+                    'Accept':'application/json',
+                    'Content-Type':'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            }
+            this.axios.get('services/all',header).then(
+                response=>{
+                    this.isloading = false
+                    if (response.data['status_code']==200){
+                        var services = response.data['data']
+                        for (var i=0;i<services.length;i++){
+                            var service = services[i]
+                            var obj = {value:service.id,text:service.name,subservices:service.subcategories}
+                            this.services.push(obj)
+                        }
+                        this.updateSubserviceList()
+                    }else if(response.data['status_code']==402){
+                        alert("Email already taken")
+                    }
+                }
+            ).catch(error=>{
+                this.isloading = false
+                console.log(error)
+                var code = error.response.status
+
+                if (code == 401){
+                    alert('Please login first, you are not authenticated')
+                }else if(code == 500){
+                    alert('Server error, please try again later')
+                }else{
+                    alert('Unkown error has occured')
+                }
+            })
+        },
         toggle(tab){
             console.log(tab)
             if(tab == "company")this.isActive=true
@@ -169,23 +211,52 @@ export default {
             })
         },
         submit(){
-            this.isloading = true
             var header = {
                 headers:{
-                    'Authorization':'',
-                    'Accept':'application/json'
+                    'Authorization':'Bearer '+localStorage.access_token,
+                    'Accept':'application/json',
+                    'Content-Type':'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
                 }
             }
-            this.axios.post('/company/save',this.form,header).then(
-                response=>{
+            if (this.selected_subservices.length==0){
+                alert("please select subservices first")
+                console.log(this.form)
+            }else{
+                this.isloading = true
+                var subs = this.selected_subservices
+                this.form.subservice = subs.join(",")
+                this.axios.post('/fundi/update',this.form,header).then(
+                    response=>{
+                        this.isloading = false
+                        console.log(response)
+                        this.$router.push({name:'fundis'})
+                    }
+                ).catch(error=>{
                     this.isloading = false
-                    console.log(response)
-                    this.$router.push({name:'companies'})
+                    console.log(error)
+                })
+            }
+        },
+        updateSubserviceList(){
+            var service = null
+            for (var i=0;i<this.services.length;i++){
+                var cat = this.services[i]
+                // var selected = this.form.service
+                if(cat.value==this.form.service_id){
+                    service = cat
                 }
-            ).catch(error=>{
-                this.isloading = false
-                console.log(error)
-            })
+            }
+            this.subservices = []
+            console.log("update service list method")
+            console.log(service)
+            console.log("__________________________")
+            for (var j=0;j<service.subservices.length;j++){
+                var sub = service.subservices[j]
+                var obj = {value:sub.id,text:sub.title}
+                console.log(obj)
+                this.subservices.push(obj)
+            }
         }
     }
 }

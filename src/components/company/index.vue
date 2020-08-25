@@ -41,10 +41,10 @@
                         <thead class="thead-inverse border-bottom">
                             <tr class="mb-3">
                                 <th></th>
-                                <th class="th">Company Name</th>
-                                <th class="th">Company Location</th>
-                                <th class="th">Service Category</th>
-                                <th class="th">Service Sub-Categories</th>
+                                <th  style="text-align: left;" class="th">Company Name</th>
+                                <th  style="text-align: left;" class="th">Company Location</th>
+                                <th  style="text-align: left;" class="th">Service Category</th>
+                                <th  style="text-align: left;" class="th">Service Sub-Categories</th>
                                 <th>
                                     <!-- <select name="sort" id="" class="form-control filter" style="font-size:10px;">
                                         <option value="">service ID</option>
@@ -63,13 +63,13 @@
                                     <td>
                                         <img src="../../assets/fundis.png" style="width:28px;height:28px;margin-top:0px;">
                                     </td>
-                                    <td>{{company.name}}</td>
-                                    <td>{{company.location}}</td>
-                                    <td>{{company.service_category}}</td>
-                                    <td>{{company.subcategories}}</td>
-                                    <td></td>
-                                    <td></td>
-                                    <td>
+                                    <td style="text-align: left;">{{company.name}}</td>
+                                    <td style="text-align: left;">{{company.location}}</td>
+                                    <td style="text-align: left;">{{company.service_category}}</td>
+                                    <td style="text-align: left;">{{company.subs}}</td>
+                                    <td style="text-align: left;"></td>
+                                    <td style="text-align: left;"></td>
+                                    <td style="text-align: left;">
                                         <div class="flex-row flex-nowrap">
                                             <div>
                                                 <b-icon icon="three-dots-vertical"></b-icon>
@@ -113,20 +113,25 @@ export default {
             }
             this.axios.get("company/all",header).then(
                 response=>{
-                    if(response.data['status_code'==200]){
+                    if(response.data['status_code']==200){
                         var companies = response.data['companies']
+                        // console.log(companies)
                         this.total = response.data['count']
                         this.active = 0
 
                         for (var i=0;i<companies.length;i++){
                             var company = companies[i]
-                            var obj = {id:company.id,img:'report.png',name:company.name,location:company.address,service_category:company.service
+
+                            var obj = {id:company.id,img:'report.png',name:company.name,selected_id:company.service_id,subs:company.subservices.join(","),selected_subservices:company.selected_subservices,location:company.address,service_category:company.service
                                 ,subcategories:company.subservices,tinno:company.tinNumber,registrationno:company.registrationNumber,businessno:company.businessNumber,region:company.region
                                 ,address:company.address,phone:company.contactNumber,email:company.email,website:company.website}
+                            console.log("---------------------")
+                            console.log(obj.subs)
+                            console.log("---------------------")
                             this.companies.push(obj)
                         }
                     }
-                    console.log(response)
+                    // console.log(response)
                 }
             ).catch(error=>{
                 console.log(error)

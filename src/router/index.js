@@ -40,7 +40,8 @@ Vue.use(Router);
         {
           path:'/user/projects',
           name:'projects',
-          component:UserProjects
+          component:UserProjects,
+          props:(user)=>({user:user})
         },
         {
           path:'/fundis',

@@ -115,12 +115,7 @@ export default {
             active_fundis_week:0,
             isOnline:false,
             username:'',
-            fundis:[
-                // {id:1,img:'report.png',name:'Electronics Repair',fundiid:'1232455',category:"Electronic",noofsubcategories:32,subcategories:[{name:'sub one',image:'image one'}]},
-                // {id:1,img:'report.png',name:'House Cleaning',fundiid:'1249955',category:"PLumbing",noofsubcategories:7,subcategories:[{name:'sub two',image:'image two'}]},
-                // {id:1,img:'report.png',name:'Home Internet',fundiid:'232408',category:"Electronic",noofsubcategories:4,subcategories:[{name:'sub three',image:'image three'}]},
-                // {id:1,img:'report.png',name:'Car Repair',fundiid:'328773',category:"Plumbing",noofsubcategories:12,subcategories:[{name:'sub four',image:'image four'}]}
-            ]
+            fundis:[]
         }
     },
     mounted(){
@@ -135,17 +130,17 @@ export default {
         }
         this.axios.get("fundi/all",header).then(
             response=>{
-                console.log(response.data)
+                // console.log(response.data)
                 if(response.data['status_code']==200){
                     this.active_fundis = response.data['active_fundis']
                     this.active_fundis_week = response.data['active_fundis_week']
-                    // {id:1,img:'report.png',name:'Electronics Repair',fundiid:'1232455',
+                    // {id:1,img:'report.png',name:'Electron8ics Repair',fundiid:'1232455',
                     // category:"Electronic",noofsubcategories:32,subcategories:[{name:'sub one',image:'image one'}]},
-                    console.log(response.data['fundis'])
+                    // console.log(response.data['fundis'])
                     this.fundis = []
                     for(var i=0; i<response.data['fundis'].length;i++){
                         var fundi = response.data['fundis'][i]
-                        console.log("noofsubcategories: "+fundi.subservices.length)
+
                         var obj = {
                             id:fundi.basic.id,
                             img:fundi.basic.id,
@@ -153,9 +148,21 @@ export default {
                             fundiid:fundi.basic.fundi_id,
                             category:fundi.services.title,
                             status:fundi.basic.status,
+                            service_id:fundi.basic.service_id,
+                            nida:fundi.basic.nida,
+                            fname:fundi.basic.fname,
+                            lname:fundi.basic.lname,
+                            email:fundi.basic.email,
+                            gender:fundi.basic.gender,
+                            cost:fundi.basic.initialCost,
+                            region:fundi.basic.region,
+                            address:fundi.basic.address,
+                            phone:fundi.basic.phone,
+                            website:fundi.basic.website,
+                            head:fundi.basic.head,
                             noofsubcategories:fundi.subservices.length
                         }
-                        console.log(obj)
+                        // console.log(obj)
                         this.fundis.push(obj)
                     }
                 }

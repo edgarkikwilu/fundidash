@@ -19,9 +19,8 @@
                     <b-row>
                         <b-col cols="2" offset-md="1" class="mt-3">
                             <b-form-select v-model="form.gender" class="input-border">
-                                <template v-slot:first>
-                                    <b-form-select-option :value="null" disabled>-- Please select gender --</b-form-select-option>
-                                </template>
+                                <option value="" disabled>-- Please select gender --</option>
+<!--                                <b-form-select-option value="null" disabled>&#45;&#45; Please select gender &#45;&#45;</b-form-select-option>-->
                                 <b-form-select-option value="male">Male</b-form-select-option>
                                 <b-form-select-option value="female">Female</b-form-select-option>
                                 <b-form-select-option value="unknown">Rather not say</b-form-select-option>
@@ -36,14 +35,13 @@
                     </b-row>
                     <b-row>
                         <b-col cols="3" offset-md="1" class="mt-3">
-                            <b-form-select class="input-border" v-model="category" :options="categories">
-                                <template v-slot:first>
-                                    <b-form-select-option :value="null" disabled>-- Please select category --</b-form-select-option>
-                                </template>
+                            <b-form-select class="input-border" v-model="category">
+                                <option value="" disabled>-- Please select category --</option>
+                                <b-form-select-option v-for="category in categories" :value="category.value" :key="category.value">{{category.text}}</b-form-select-option>
                             </b-form-select>
                         </b-col>
                         <b-col cols="3" class="mt-3">
-                            <b-form-select class="input-border" v-model="form.subcategory" placeholder="Subcategory" :options="subcategories">
+                            <b-form-select class="input-border" multiple v-model="selected_subcategories" placeholder="Subcategory" :options="subcategories">
                                 <template v-slot:first>
                                     <b-form-select-option :value="null" disabled>-- Please select subcategory --</b-form-select-option>
                                 </template>
@@ -74,10 +72,9 @@
                     </b-row>
                     <b-row class="mt-5">
                         <b-col cols="3" offset-md="1">
-                            <b-form-select class="input-border" v-model="form.region" :options="regions">
-                                <template v-slot:first>
-                                    <b-form-select-option :value="null" disabled>-- Please select region --</b-form-select-option>
-                                </template>
+                            <b-form-select class="input-border" v-model="form.region">
+                                <option value="" disabled>-- Please select region --</option>
+                                <b-form-select-option v-for="region in regions" :value="region.value" :key="region.value">{{region.text}}</b-form-select-option>
                             </b-form-select>
                         </b-col>
                         <b-col cols="3">
@@ -123,10 +120,11 @@ export default {
             isActive:true,
             category:'',
             subcategory:'',
+            selected_subcategories:[],
             categories:[],
             subcategories:[],
             form:{nida:'',gender:'',fname:'',lname:'',category:'',subcategory:'',costing:0,region:'',address:'',phone:'',email:'',website:'',head:''},
-            regions:[{value:null,text:'Regions'},{value:1,text:'Dar es salaam'},{value:1,text:'Arusha'},{value:1,text:'Mwanza'},{value:1,text:'Morogoro'},{value:1,text:'Dodoma'}]
+            regions:[{value:"Dar es salaam",text:'Dar es salaam'},{value: "Arusha",text:'Arusha'},{value:"Mwanza",text:'Mwanza'},{value:"Morogoro",text:'Morogoro'},{value:"Morogoro",text:'Dodoma'}]
         }
     },
     mounted(){
@@ -196,12 +194,9 @@ export default {
         loadSubcategories(){
             for (let i = 0; i < this.categories; i++) {
                 const element = this.categories[i];
-                console.log(this.category)
                 if(element.id == this.category){
                     this.subcategories = element.subcategories
-                    console.log(element)
                 }
-                
             }
             // var headers = {
             //     headers:{
@@ -228,6 +223,8 @@ export default {
                     'Content-Type':'application/json'
                 }
             }
+            var subs = this.selected_subcategories.join(",")
+            this.form.subcategory = subs
             this.axios.post('/fundi/create',this.form,header).then(
                 response=>{
                     this.isloading = false
