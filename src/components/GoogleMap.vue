@@ -3,7 +3,7 @@
         <div>
             <h5>Search fundi address</h5>
             <label>
-                <gmap-autocomplete @place_changed="setPlace"></gmap-autocomplete>
+                <gmap-autocomplete @place_changed="setPlace" class="input-google"></gmap-autocomplete>
                 <b-button @click="addMarker" class="button-search">Add Location</b-button>
             </label>
             <br/>
@@ -93,5 +93,27 @@
         text-align: center !important;
         color: #FFFFFF !important;
         background-color: #de0b15 !important;
+    }
+    .input-google{
+        font-style: normal !important;
+        font-weight: normal !important;
+        font-size: 10px !important;
+        line-height: 16px !important;
+        color: #9EA0A5 !important;
+        box-shadow: none !important;
+        width: 200px;
+        height: 30px;
+        border-width: 1px;
+        border-radius: 4px;
+        padding-left: 4px;
+        border-color: #d6d6cf !important;
+    }
+
+     .input-google:hover{
+        border-color: #B7BE46 !important;
+        cursor: pointer;
+    }
+    .input-google:focus{
+        border-color: #B7BE46 !important;
     }
 </style>
