@@ -78,7 +78,7 @@
                             </b-form-select>
                         </b-col>
                         <b-col cols="3">
-                            <b-input v-model="form.address" class="input-border" placeholder="Address"></b-input>
+                            <b-input v-model="form.address" @click="showMap" class="input-border" placeholder="Address"></b-input>
                         </b-col>
                         <b-col cols="3" class="phone-field">
                             <span id="code">+255</span>
@@ -105,6 +105,9 @@
                             <b-button @click="submit" v-if="!isloading" class="button ml-5">Submit</b-button>
                         </b-col>
                     </b-row>
+                    <div v-if="getLocationClicked">
+                        <google-map v-on:updateAddress="updateAddress($event)" style="height: 200px;width: 100%"/>
+                    </div>
                 </b-card>
             </b-col>
         </b-row>
@@ -112,20 +115,28 @@
 </template>
 
 <script>
+import GoogleMap from "../GoogleMap";
 export default {
     name:"create-fundi",
     data:function(){
         return {
             isloading:false,
             isActive:true,
+            getLocationClicked:false,
+            lat:'',
+            lng:'',
+            address:'',
             category:'',
             subcategory:'',
             selected_subcategories:[],
             categories:[],
             subcategories:[],
-            form:{nida:'',gender:'',fname:'',lname:'',category:'',subcategory:'',costing:0,region:'',address:'',phone:'',email:'',website:'',head:''},
+            form:{nida:'',gender:'',fname:'',lname:'',category:'',subcategory:'',costing:0,region:'',address:'',lat:'',lng:'',phone:'',email:'',website:'',head:''},
             regions:[{value:"Dar es salaam",text:'Dar es salaam'},{value: "Arusha",text:'Arusha'},{value:"Mwanza",text:'Mwanza'},{value:"Morogoro",text:'Morogoro'},{value:"Morogoro",text:'Dodoma'}]
         }
+    },
+    components:{
+        GoogleMap
     },
     mounted(){
         this.loadCategories()
@@ -154,6 +165,9 @@ export default {
         },
         prev(){
             this.isActive = true
+        },
+        showMap(){
+            this.getLocationClicked = true
         },
         loadCategories(){
             var headers = {
@@ -235,6 +249,13 @@ export default {
                 this.isloading = false
                 console.log(error)
             })
+        },
+        updateAddress(address){
+            console.log(address.lat)
+            this.form.lat = address.lat
+            this.form.lng = address.lng
+            this.form.address = address.address
+            this.getLocationClicked = false
         }
     }
 }

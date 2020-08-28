@@ -12,6 +12,7 @@ import axios from 'axios'
 import VueAxios from 'vue-axios'
 import Vuex from 'vuex'
 import store from './store'
+import * as VueGoogleMaps from "vue2-google-maps";
  
 Vue.use(VueAxios, axios)
 Vue.use(Vuex)
@@ -22,6 +23,14 @@ Vue.use(IconsPlugin)
 import 'bootstrap/dist/css/bootstrap.css'
 import 'bootstrap-vue/dist/bootstrap-vue.css'
 
+Vue.use(VueGoogleMaps, {
+  load: {
+    key: "AIzaSyAg_2WBoNb3-xGg7bGdl2cP69nnt5dVx7I",
+    libraries: "places" // necessary for places input
+  }
+});
+
+
 Chartkick.options = {
   colors:["#EB5757","#f3f3f3"]
 }
@@ -29,7 +38,7 @@ Chartkick.options = {
 Vue.config.productionTip = false
 // Vue.prototype.$isAuth = false
 // axios.defaults.baseURL = "http://dev.smartcodes.co.tz/fundifasta/public/api/dashboard/";
-axios.defaults.baseURL = "http://localhost:8001/api/dashboard/";
+axios.defaults.baseURL = "http://localhost:8000/api/dashboard/";
 
 new Vue({
   router,
